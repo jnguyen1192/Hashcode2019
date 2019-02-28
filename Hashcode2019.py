@@ -150,7 +150,7 @@ def data_preparation(data):
     list_photos = []
     for key, d in enumerate(data):
         list_photos.append(Photo(key, d))
-    print(list_photos[0].str_list_photo())
+    description(list_photos)
     return list_photos
 
 
@@ -160,16 +160,33 @@ class Photo:
     """
     def __init__(self, num_photo, line):
         self.num_photo = num_photo
-        self.nb_photo = line[0]
+        self.orientation = line[0]
+        self.nb_photo = line[2]
         self.list_photo = line.split(" ")[2:]
 
     def get_num_photo(self):
+        """
+        Get the id of the photo
+        :return: the id of the photo
+        """
         return self.num_photo
 
-    def str_list_photo(self):
+    def get_orientation(self):
+        """
+        Get the orientation of the photo
+        :return: the id of the photo
+        """
+        return self.orientation
+
+    def str_list_words(self):
+        """
+        Get the list of words
+        :return:
+        """
         return self.list_photo
 
-def pretty_print_preparation(list_photos):
+
+def description(list_photos):
     """
     Print the data as the example with the cat on the beach
     The collection has 4 photos
@@ -177,11 +194,22 @@ def pretty_print_preparation(list_photos):
     Photo 1 is vertical and has tags [selfie, smile]
     Photo 2 is vertical and has tags [garden, selfie]
     Photo 3 is horizontal and has tags [garden, cat]
+
     :param list_photos: the different photos of dataset
-    :return:
     """
-    str = ""
+    strconcat = "-------------------Description----------------------------\n"
+    strconcat += "The collection has " + str(len(list_photos)) + " photos\n"
     for photo in list_photos:
+        if photo.orientation == 'H':
+            ori = "horizontal"
+        else:
+            ori = "vertical"
+        strconcat += "Photo " + str(photo.get_num_photo()) + " is " + ori + " and has tags ["
+        for word in photo.str_list_words():
+            strconcat += word + ", "
+        strconcat = strconcat[:-2] + "]\n"
+    print(strconcat)
+
 
 
 
@@ -195,9 +223,7 @@ def hc2019(lines):
     # data retrieve
     data = data_retrieve(lines)
     # data preparation
-    print(data)
     list_photos = data_preparation(data)
-    print(list_photos[0].get_num_photo())
     # data modelisation
     #chocolate_charts_manager = ChocolateChartsManager(number_after_recipe)
     # data analyse
