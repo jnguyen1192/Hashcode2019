@@ -142,17 +142,16 @@ class ChocolateChartsManager:
 
 def data_retrieve(lines):
     # return the new lines traited
-
     return lines
 
 
 def data_preparation(data):
     # return the value of input
     list_photos = []
-    for d in data:
-        list_photos.append(Photo(d))
+    for key, d in enumerate(data):
+        list_photos.append(Photo(key, d))
     print(list_photos[0].str_list_photo())
-    return ""
+    return list_photos
 
 
 class Photo:
@@ -164,9 +163,26 @@ class Photo:
         self.nb_photo = line[0]
         self.list_photo = line.split(" ")[2:]
 
+    def get_num_photo(self):
+        return self.num_photo
 
     def str_list_photo(self):
         return self.list_photo
+
+def pretty_print_preparation(list_photos):
+    """
+    Print the data as the example with the cat on the beach
+    The collection has 4 photos
+    Photo 0 is horizontal and has tags [cat, beach, sun]
+    Photo 1 is vertical and has tags [selfie, smile]
+    Photo 2 is vertical and has tags [garden, selfie]
+    Photo 3 is horizontal and has tags [garden, cat]
+    :param list_photos: the different photos of dataset
+    :return:
+    """
+    str = ""
+    for photo in list_photos:
+
 
 
 class Slide:
@@ -180,7 +196,8 @@ def hc2019(lines):
     data = data_retrieve(lines)
     # data preparation
     print(data)
-    number_after_recipe = data_preparation(data)
+    list_photos = data_preparation(data)
+    print(list_photos[0].get_num_photo())
     # data modelisation
     #chocolate_charts_manager = ChocolateChartsManager(number_after_recipe)
     # data analyse
@@ -194,7 +211,7 @@ class Hashcode2019(unittest.TestCase):
 
     def test_hashcode2019_a(self):
         lines = input_file("a_example.txt")
-        res = output_file()
+        #res = output_file()
         pred = hc2019(lines)
         print(pred)
         #assert(pred == res)
