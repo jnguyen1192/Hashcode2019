@@ -282,6 +282,40 @@ class Slide:
         return self.words_slide
 
 
+class SlideShow:
+    """
+    Class to get the score of the current SlideShow
+    """
+    def __init__(self, list_photos):
+        self.list_photos = list_photos
+        self.list_slides = []
+
+    def build_slides_easy_way(self):
+        """
+        The way without logic, only sort the slide with their orientation
+        """
+        slide_part1 = None
+        for photo in self.list_photos:
+            if photo.get_orientation() == "H":
+                # case the slide is horizontal
+                self.list_slides.append(Slide(photo))
+            else:
+                # case the slide is vertical
+                if slide_part1 is None:
+                    # add the vertical photo on memory
+                    slide_part1 = photo
+                else:
+                    # create a slide with the photo on memory and the current photo
+                    self.list_slides.append(Slide(slide_part1, photo))
+                    slide_part1 = None
+
+    def describe(self):
+        """
+        Nous voulons afficher
+        :return:
+        """
+
+
 
 
 def hc2019(lines):
@@ -290,7 +324,7 @@ def hc2019(lines):
     # data preparation
     list_photos = data_preparation(data)
     # data modelisation
-    #chocolate_charts_manager = ChocolateChartsManager(number_after_recipe)
+    list_slide = SlideShow(list_photos)
     # data analyse
     #chocolate_charts_manager.execute(False)
     # data visualize
