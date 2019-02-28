@@ -150,7 +150,7 @@ def data_preparation(data):
     list_photos = []
     for key, d in enumerate(data):
         list_photos.append(Photo(key, d))
-    description(list_photos)
+    input_description(list_photos)
     return list_photos
 
 
@@ -186,7 +186,7 @@ class Photo:
         return self.list_photo
 
 
-def description(list_photos):
+def input_description(list_photos):
     """
     Print the data as the example with the cat on the beach
     The collection has 4 photos
@@ -211,6 +211,14 @@ def description(list_photos):
     print(strconcat)
 
 
+def output_description(list_slides):
+    """
+    Print the data as the submission
+    :param list_slides:
+    :return:
+    """
+
+
 def intersect_f(s_, s_next):
     """
     Get the intersection of the two list
@@ -218,14 +226,62 @@ def intersect_f(s_, s_next):
     :param s_next: list 2
     :return: the number of word in intersect
     """
-    return len(set(s_).intersection(s_next) )
+    return len(set(s_).intersection(s_next))
 
+
+def s_not_in_s_next(s_, s_next):
+    """
+    Get the second factor which means s not in s_next
+    :param s_: list 1
+    :param s_next: list 2
+    :return: the number of word of list 1 not in list 2
+    """
+    return len(set(s_) - set(s_next))
+
+
+def s_next_not_in_s_(s_, s_next):
+    """
+    Get the third factor which means s not in s_next
+    :param s_: list 1
+    :param s_next: list 2
+    :return: the number of word of list 1 not in list 2
+    """
+    return len(set(s_next) - set(s_))
+
+
+def interest_factor(s_, s_next):
+    """
+    Get the number of interest factor which is the minimum of
+    the three calculate values of factor
+    :param s_: list 1
+    :param s_next: list 2
+    :return: the minumum of factor
+    """
+    factors = []
+    factors.append(intersect_f(s_, s_next))
+    factors.append(s_not_in_s_next(s_, s_next))
+    factors.append(s_next_not_in_s_(s_, s_next))
+    return min(factors)
 
 
 class Slide:
     """
-    Class to describe a slide using photo
+    Class to describe a slide using one horizontal photo
+    or two vertical photo
     """
+    def __init__(self, words_photo1, words_photo2=[]):
+        self.words_photo1 = words_photo1
+        self.words_photo2 = words_photo2
+        self.words_slide = set(words_photo1 + words_photo2)
+
+    def get_words(self):
+        """
+        Get the words of the slide
+        :return: the unique words
+        """
+        return self.words_slide
+
+
 
 
 def hc2019(lines):
