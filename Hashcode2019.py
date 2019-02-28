@@ -211,6 +211,15 @@ def description(list_photos):
     print(strconcat)
 
 
+def intersect_f(s_, s_next):
+    """
+    Get the intersection of the two list
+    :param s_: list 1
+    :param s_next: list 2
+    :return: the number of word in intersect
+    """
+    return len(set(s_).intersection(s_next) )
+
 
 
 class Slide:
