@@ -17,10 +17,6 @@ def output_file():
     return res
 
 
-
-
-
-
 def data_retrieve(lines):
     # return the new lines traited
     return lines
@@ -93,59 +89,6 @@ def input_description(list_photos):
     print(strconcat)
 
 
-def output_description(list_slides):
-    """
-    Print the data as the submission
-    :param list_slides:
-    :return:
-    """
-
-
-def intersect_f(s_, s_next):
-    """
-    Get the intersection of the two list
-    :param s_: list 1
-    :param s_next: list 2
-    :return: the number of word in intersect
-    """
-    return len(set(s_).intersection(s_next))
-
-
-def s_not_in_s_next(s_, s_next):
-    """
-    Get the second factor which means s not in s_next
-    :param s_: list 1
-    :param s_next: list 2
-    :return: the number of word of list 1 not in list 2
-    """
-    return len(set(s_) - set(s_next))
-
-
-def s_next_not_in_s_(s_, s_next):
-    """
-    Get the third factor which means s not in s_next
-    :param s_: list 1
-    :param s_next: list 2
-    :return: the number of word of list 1 not in list 2
-    """
-    return len(set(s_next) - set(s_))
-
-
-def interest_factor(s_, s_next):
-    """
-    Get the number of interest factor which is the minimum of
-    the three calculate values of factor
-    :param s_: list 1
-    :param s_next: list 2
-    :return: the minumum of factor
-    """
-    factors = []
-    factors.append(intersect_f(s_, s_next))
-    factors.append(s_not_in_s_next(s_, s_next))
-    factors.append(s_next_not_in_s_(s_, s_next))
-    return min(factors)
-
-
 class Slide:
     """
     Class to describe a slide using one horizontal photo
@@ -154,6 +97,12 @@ class Slide:
     def __init__(self, photo1, photo2=""):
         self.photo1 = photo1
         self.photo2 = photo2
+
+    def get_words(self):
+        if self.photo2 != "":
+            return set(self.photo1.get_list_words() + self.photo2.get_list_words())
+        else:
+            return self.photo1.get_list_words()
 
     def get_photo1_orientation(self):
         """
@@ -209,6 +158,58 @@ class SlideShow:
         import random
         random.shuffle(self.list_slides)
 
+    def intersect_f(self, s_, s_next):
+        """
+        Get the intersection of the two list
+        :param s_: list 1
+        :param s_next: list 2
+        :return: the number of word in intersect
+        """
+        return len(set(s_).intersection(s_next))
+
+    def s_not_in_s_next(self, s_, s_next):
+        """
+        Get the second factor which means s not in s_next
+        :param s_: list 1
+        :param s_next: list 2
+        :return: the number of word of list 1 not in list 2
+        """
+        return len(set(s_) - set(s_next))
+
+    def s_next_not_in_s_(self, s_, s_next):
+        """
+        Get the third factor which means s not in s_next
+        :param s_: list 1
+        :param s_next: list 2
+        :return: the number of word of list 1 not in list 2
+        """
+        return len(set(s_next) - set(s_))
+
+    def interest_factor(self, s_, s_next):
+        """
+        Get the number of interest factor which is the minimum of
+        the three calculate values of factor
+        :param s_: list 1
+        :param s_next: list 2
+        :return: the minumum of factor
+        """
+        factors = []
+        factors.append(self.intersect_f(s_, s_next))
+        factors.append(self.s_not_in_s_next(s_, s_next))
+        factors.append(self.s_next_not_in_s_(s_, s_next))
+        return min(factors)
+
+    def get_score(self):
+        """
+        Get the score the the slide show using interest factor
+        :return: the score
+        """
+        score = 0
+        s_ = self.list_slides[0]
+        for s_next in self.list_slides[1:]:
+            score += self.interest_factor(s_.get_words(), s_next.get_words())
+        return score
+
     def submit_describe(self):
         """
         Nous voulons afficher le resultat de notre slide show
@@ -253,22 +254,39 @@ def hc2019(lines):
     # slide_show.submit_describe()
     # data visualize
     res = slide_show.visualize()
+    #print(slide_show.get_score())
     return res
 
 
 class Hashcode2019(unittest.TestCase):
 
-    def test_hashcode2019_a(self):
-        lines = input_file("a_example.txt")
+    def test_hashcode2019(self):
+        list_sample = ["a_example", "b_lovely_landscapes",
+                       "c_memorable_moments", "d_pet_pictures",
+                       "e_shiny_selfies"]
+        for sample in list_sample:
+            lines = input_file(sample + ".txt")
+            #res = output_file()
+            pred = hc2019(lines)
+            f = open(sample + "_output.txt", "w+")
+            f.write(pred)
+            f.close()
+"""
+    def test_hashcode2019_e_score(self):
+        lines = input_file("e_shiny_selfies.txt")
         #res = output_file()
         pred = hc2019(lines)
-        f = open("a_example_output.txt", "w+")
+        print(pred)
+        
+    def test_hashcode2019_a(self):
+        lines = input_file("b_lovely_landscapes.txt")
+        pred = hc2019(lines)
+        f = open("b_lovely_landscapes_output.txt", "w+")
         f.write(pred)
         f.close()
 
     def test_hashcode2019_b(self):
         lines = input_file("b_lovely_landscapes.txt")
-        #res = output_file()
         pred = hc2019(lines)
         f = open("b_lovely_landscapes_output.txt", "w+")
         f.write(pred)
@@ -276,7 +294,6 @@ class Hashcode2019(unittest.TestCase):
 
     def test_hashcode2019_c(self):
         lines = input_file("c_memorable_moments.txt")
-        #res = output_file()
         pred = hc2019(lines)
         f = open("c_memorable_moments_output.txt", "w+")
         f.write(pred)
@@ -284,7 +301,6 @@ class Hashcode2019(unittest.TestCase):
 
     def test_hashcode2019_d(self):
         lines = input_file("d_pet_pictures.txt")
-        #res = output_file()
         pred = hc2019(lines)
         f = open("d_pet_pictures_output.txt", "w+")
         f.write(pred)
@@ -292,12 +308,11 @@ class Hashcode2019(unittest.TestCase):
 
     def test_hashcode2019_e(self):
         lines = input_file("e_shiny_selfies.txt")
-        #res = output_file()
         pred = hc2019(lines)
         f = open("e_shiny_selfies_output.txt", "w+")
         f.write(pred)
         f.close()
-
+"""
 
 if __name__ == '__main__':
     unittest.main()
