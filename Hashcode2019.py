@@ -164,6 +164,7 @@ class Photo:
         self.nb_photo = line[0]
         self.list_photo = line.split(" ")[2:]
 
+
     def str_list_photo(self):
         return self.list_photo
 
