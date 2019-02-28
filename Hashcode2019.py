@@ -17,127 +17,8 @@ def output_file():
     return res
 
 
-class Elve:
-    """
-    An Elve has a recipe position and value
-    """
-    def __init__(self, current_recipe_position, current_recipe_value):
-        """
-        An Elf use those parameter build new recipe
-        :param current_recipe_position:
-        :param current_recipe_value:
-        """
-        self.current_recipe_position = current_recipe_position
-        self.current_recipe_value = current_recipe_value
-
-    def get_current_recipe_position(self):
-        """
-        :return:  the current recipe position
-        """
-        return self.current_recipe_position
-
-    def get_current_recipe_value(self):
-        """
-        :return:  the current recipe value
-        """
-        return self.current_recipe_value
-
-    def set_current_recipe_position(self, position):
-        """
-        set the current recipe position
-        """
-        self.current_recipe_position = position
-
-    def set_current_recipe_value(self, value):
-        """
-        set the current recipe value
-        """
-        self.current_recipe_value = value
 
 
-class ChocolateChartsManager:
-    """
-    Chocolate charts manager permits us to know what happened each turn
-    """
-    def __init__(self, after_number_recipe=9, first_recipe=3, second_recipe=7):
-        """
-        The value of the first recipe are 3 and 7 for the two elves
-        :param after_number_recipe: number of recipe from the beginning of recipe list
-        :param first_recipe: recipe of the first elve
-        :param second_recipe: recipe of the second elve
-        """
-        self.after_number_recipe = after_number_recipe
-        self.first_elve = Elve(0, first_recipe)
-        self.second_elve = Elve(1, second_recipe)
-        self.recipes = str(first_recipe) + str(second_recipe)
-
-    def sum_recipes(self):
-        """
-        Calculate the sum of recipe value of both elves
-        :return: the sum of recipe
-        """
-        return self.first_elve.get_current_recipe_value() + self.second_elve.get_current_recipe_value()
-
-    def extract_result(self, sum_):
-        """
-        Extract the result from the sum of each elves values
-        :param sum_: sum of elves value
-        :return: a list or a value
-        """
-        sum_extract = []
-        if sum_/10 >= 1:
-            # case superior by ten
-            sum_extract.append(int(str(sum_)[0]))
-            sum_extract.append(int(str(sum_)[1]))
-            return sum_extract
-        else:
-            # case inferior by ten
-            return [sum_]
-
-    def next_elves_position(self):
-        """
-        Move the two elves using the rule that
-        the next position is the current recipe
-        value plus the current position plus one
-        in the list of recipe
-        """
-        first_elve_move = (self.first_elve.get_current_recipe_position() + self.first_elve.get_current_recipe_value() + 1) % len(self.recipes)
-        self.first_elve.set_current_recipe_position(first_elve_move)
-        self.first_elve.set_current_recipe_value(int(self.recipes[first_elve_move]))
-
-        second_elve_move = (self.second_elve.get_current_recipe_position() + self.second_elve.get_current_recipe_value() + 1) % len(self.recipes)
-        self.second_elve.set_current_recipe_position(second_elve_move)
-        self.second_elve.set_current_recipe_value(int(self.recipes[second_elve_move]))
-
-    def execute(self, debug=False):
-        # process on recipes
-        i = 0
-        while len(self.recipes) < self.after_number_recipe + 10:
-            # sum of two elves recipe
-            sum_ = self.sum_recipes()
-            # split the result if > %10
-            #extract_sum = self.extract_result(sum_)
-            self.recipes = self.recipes + str(sum_)
-            # move the elves
-            self.next_elves_position()
-            if debug:
-                self.print_step(i)
-            i += 1
-
-    def print_step(self, i):
-        """
-        print each step
-        """
-        import sys
-        print(str(i))
-        #print(self.recipes)
-
-    def visualize(self):
-        """
-        Get the ten digits after the number of recipes in input
-        :return:ten digits in string format
-        """
-        return "".join(self.recipes[self.after_number_recipe:self.after_number_recipe+10])
 
 
 def data_retrieve(lines):
@@ -150,7 +31,7 @@ def data_preparation(data):
     list_photos = []
     for key, d in enumerate(data):
         list_photos.append(Photo(key, d))
-    input_description(list_photos)
+    #input_description(list_photos)
     return list_photos
 
 
@@ -178,7 +59,7 @@ class Photo:
         """
         return self.orientation
 
-    def str_list_words(self):
+    def get_list_words(self):
         """
         Get the list of words
         :return:
@@ -205,9 +86,10 @@ def input_description(list_photos):
         else:
             ori = "vertical"
         strconcat += "Photo " + str(photo.get_num_photo()) + " is " + ori + " and has tags ["
-        for word in photo.str_list_words():
+        for word in photo.get_list_words():
             strconcat += word + ", "
         strconcat = strconcat[:-2] + "]\n"
+    strconcat += "-----------------------------------------------------------\n"
     print(strconcat)
 
 
@@ -269,17 +151,33 @@ class Slide:
     Class to describe a slide using one horizontal photo
     or two vertical photo
     """
-    def __init__(self, words_photo1, words_photo2=[]):
-        self.words_photo1 = words_photo1
-        self.words_photo2 = words_photo2
-        self.words_slide = set(words_photo1 + words_photo2)
+    def __init__(self, photo1, photo2=""):
+        self.photo1 = photo1
+        self.photo2 = photo2
 
-    def get_words(self):
+    def get_photo1_orientation(self):
         """
-        Get the words of the slide
-        :return: the unique words
+        Get the first photo
+        :return: a photo
         """
-        return self.words_slide
+        return self.photo1.get_orientation()
+
+    def get_num_photo1(self):
+        """
+        Get the number of the first photo
+        :return: the num of the photo
+        """
+        return self.photo1.get_num_photo()
+
+    def get_num_photo2(self):
+        """
+        Get the number of the second photo
+        :return: the num of the photo
+        """
+        if self.photo2 == "":
+            return 0
+        else:
+            return self.photo2.get_num_photo()
 
 
 class SlideShow:
@@ -308,14 +206,39 @@ class SlideShow:
                     # create a slide with the photo on memory and the current photo
                     self.list_slides.append(Slide(slide_part1, photo))
                     slide_part1 = None
+        import random
+        random.shuffle(self.list_slides)
 
-    def describe(self):
+    def submit_describe(self):
         """
-        Nous voulons afficher
-        :return:
+        Nous voulons afficher le resultat de notre slide show
+        sous la forme d'un texte
+        The slideshow has 3 slides
+        First slide contains photo 0
+        Second slide contains photo 3
+        Third slide contains photos 1 and 2
         """
+        str_concat = "------------------------Submit-----------------------------\n"
+        str_concat += "The slideshow has " + str(len(self.list_slides)) + " slides\n"
+        for key, slide in enumerate(self.list_slides):
+            str_concat += str(key) + " slide contains photo " + str(slide.get_num_photo1())
+            if slide.get_photo1_orientation() == "V":
+                str_concat += " and " + str(slide.get_num_photo2())
+            str_concat += "\n"
+        str_concat += "-----------------------------------------------------------\n"
+        print(str_concat)
 
-
+    def visualize(self):
+        """
+        Nous affichons l'output pour le submit sur le judge system
+        """
+        str_concat = str(len(self.list_slides)) + "\n"
+        for slide in self.list_slides:
+            str_concat += str(slide.get_num_photo1())
+            if slide.get_photo1_orientation() == "V":
+                str_concat += " " + str(slide.get_num_photo2())
+            str_concat += "\n"
+        return str_concat
 
 
 def hc2019(lines):
@@ -324,12 +247,13 @@ def hc2019(lines):
     # data preparation
     list_photos = data_preparation(data)
     # data modelisation
-    list_slide = SlideShow(list_photos)
+    slide_show = SlideShow(list_photos)
     # data analyse
-    #chocolate_charts_manager.execute(False)
+    slide_show.build_slides_easy_way()
+    # slide_show.submit_describe()
     # data visualize
-    #ten_digits_after = chocolate_charts_manager.visualize()
-    return ""#ten_digits_after
+    res = slide_show.visualize()
+    return res
 
 
 class Hashcode2019(unittest.TestCase):
@@ -338,16 +262,41 @@ class Hashcode2019(unittest.TestCase):
         lines = input_file("a_example.txt")
         #res = output_file()
         pred = hc2019(lines)
-        print(pred)
-        #assert(pred == res)
+        f = open("a_example_output.txt", "w+")
+        f.write(pred)
+        f.close()
 
-    def test_code(self):
-        from itertools import chain
-        string = "hello world"
-        for c in chain(string):
-            print(c)
-        print((chain(string)))
-        print(chain(string)[0])
+    def test_hashcode2019_b(self):
+        lines = input_file("b_lovely_landscapes.txt")
+        #res = output_file()
+        pred = hc2019(lines)
+        f = open("b_lovely_landscapes_output.txt", "w+")
+        f.write(pred)
+        f.close()
+
+    def test_hashcode2019_c(self):
+        lines = input_file("c_memorable_moments.txt")
+        #res = output_file()
+        pred = hc2019(lines)
+        f = open("c_memorable_moments_output.txt", "w+")
+        f.write(pred)
+        f.close()
+
+    def test_hashcode2019_d(self):
+        lines = input_file("d_pet_pictures.txt")
+        #res = output_file()
+        pred = hc2019(lines)
+        f = open("d_pet_pictures_output.txt", "w+")
+        f.write(pred)
+        f.close()
+
+    def test_hashcode2019_e(self):
+        lines = input_file("e_shiny_selfies.txt")
+        #res = output_file()
+        pred = hc2019(lines)
+        f = open("e_shiny_selfies_output.txt", "w+")
+        f.write(pred)
+        f.close()
 
 
 if __name__ == '__main__':
